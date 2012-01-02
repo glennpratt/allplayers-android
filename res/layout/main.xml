@@ -43,6 +43,7 @@
 			</TextView>
 			<EditText
 			  android:id="@+id/usernameField"
+			  android:inputType="textEmailAddress"
 			  android:layout_width="fill_parent"
 			  android:layout_height="fill_parent"
 			  android:text=""
@@ -63,6 +64,7 @@
 			</TextView>
 			<EditText
 			  android:id="@+id/passwordField"
+			  android:inputType="textPassword"
 			  android:layout_width="fill_parent"
 			  android:layout_height="fill_parent"
 			  android:text=""
