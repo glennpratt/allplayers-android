@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">AllPlayers.com</string>
+    <string name="alternate_title">An alternate title that is long</string>
+    <string name="toggle_title">Toggle title</string>
+
+    <string name="fragment_tabs_pager">Tabs Pager</string>
+    <string name="hello_world">Hello World</string>
+    <string name="new_fragment">New Fragment</string>
+    <string name="menu_refresh">Refresh</string>
+    <string name="menu_search">Search</string>
+    <string name="menu_share">Share</string>
+    <string name="empty_group_list">No Groups Found</string>
 </resources>

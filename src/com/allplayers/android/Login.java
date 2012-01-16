@@ -1,10 +1,12 @@
 package com.allplayers.android;
 
+import com.allplayers.android.app.ActionBarActivity;
 import com.allplayers.rest.RestApiV1;
 
-import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -16,14 +18,16 @@ import org.jasypt.util.text.BasicTextEncryptor;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Login extends Activity {
+public class Login extends ActionBarActivity {
     private Context context;
+    ProgressDialog progressDialog;
 
     /** called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        progressDialog = new ProgressDialog(this);
 
         context = this.getBaseContext();
 
@@ -39,21 +43,7 @@ public class Login extends Activity {
         Globals.secretKey = storedSecretKey;
 
         if (storedUser != null && !storedUser.equals("") && storedPassword != null && !storedPassword.equals("")) {
-            String result = RestApiV1.validateLogin(LocalStorage.readUserName(context), LocalStorage.readPassword(context));
-
-            try {
-                JSONObject jsonResult = new JSONObject(result);
-                RestApiV1.user_id = jsonResult.getJSONObject("user").getString("uuid");
-
-                Intent intent = new Intent(Login.this, MainScreen.class);
-                startActivity(intent);
-                finish();
-            } catch (JSONException ex) {
-                System.err.println("Login/user_id/" + ex);
-
-                Toast invalidLogin = Toast.makeText(getApplicationContext(), "Invalid Login", Toast.LENGTH_LONG);
-                invalidLogin.show();
-            }
+            new LoginTask().execute(LocalStorage.readUserName(context), LocalStorage.readPassword(context));
         }
 
         final Button button = (Button)findViewById(R.id.loginButton);
@@ -72,21 +62,7 @@ public class Login extends Activity {
                 LocalStorage.writeUserName(context, username);
                 LocalStorage.writePassword(context, password);
 
-                String result = RestApiV1.validateLogin(username, encryptedPassword);
-
-                try {
-                    JSONObject jsonResult = new JSONObject(result);
-                    RestApiV1.user_id = jsonResult.getJSONObject("user").getString("uuid");
-
-                    Intent intent = new Intent(Login.this, MainScreen.class);
-                    startActivity(intent);
-                    finish();
-                } catch (JSONException ex) {
-                    System.err.println("Login/user_id/" + ex);
-
-                    Toast invalidLogin = Toast.makeText(getApplicationContext(), "Invalid Login", Toast.LENGTH_LONG);
-                    invalidLogin.show();
-                }
+                new LoginTask().execute(username, encryptedPassword);
             }
         });
     }
@@ -98,5 +74,58 @@ public class Login extends Activity {
         }
 
         return super.onKeyUp(keyCode, event);
+    }
+
+    /**
+     * Background task to load groups...
+     */
+    private class LoginTask extends AsyncTask<String, String, String> {
+        /**
+         * Before jumping into background thread, start busy animation.
+         */
+        @Override
+        protected void onPreExecute() {
+            progressDialog.setMessage("Signing in...");
+            progressDialog.show();
+        }
+
+        /**
+         * Perform the background login.
+         */
+        @Override
+        protected String doInBackground(String... args) {
+            return RestApiV1.validateLogin(args[0], args[1]);
+        }
+
+        /**
+         * Progress update (needs research).
+         */
+        @Override
+        protected void onProgressUpdate(String... args) {
+            // TODO: Update busy animation.
+        }
+
+        /**
+         * Finished, put the content in.
+         */
+        @Override
+        protected void onPostExecute(String result) {
+            // Stop animation.
+            progressDialog.dismiss();
+
+            try {
+                JSONObject jsonResult = new JSONObject(result);
+                RestApiV1.user_id = jsonResult.getJSONObject("user").getString("uuid");
+            } catch (JSONException ex) {
+                System.err.println("Login/user_id/" + ex);
+
+                Toast invalidLogin = Toast.makeText(getApplicationContext(), "Invalid Login", Toast.LENGTH_LONG);
+                invalidLogin.show();
+            }
+
+            // Go to the home screen.
+            startActivity(new Intent(Login.this, HomeActivity.class));
+            finish();
+        }
     }
 }
