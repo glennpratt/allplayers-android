@@ -1,9 +1,9 @@
 package com.allplayers.android;
 
+import com.allplayers.android.widget.ImageLoader;
 import com.allplayers.objects.AlbumData;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,24 +15,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AlbumAdapter extends ArrayAdapter<AlbumData> {
-    private ImageView albumCoverPhoto;
-    private TextView albumTitle;
-    private TextView albumExtraInfo;
     private List<AlbumData> albums = new ArrayList<AlbumData>();
+    public ImageLoader imageLoader;
 
     public AlbumAdapter(Context context, int textViewResourceId, List<AlbumData> objects) {
         super(context, textViewResourceId, objects);
         this.albums = objects;
+        imageLoader=new ImageLoader(context);
     }
 
+    @Override
     public int getCount() {
         return albums.size();
     }
 
+    @Override
     public AlbumData getItem(int index) {
         return albums.get(index);
     }
 
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
 
@@ -46,23 +48,22 @@ public class AlbumAdapter extends ArrayAdapter<AlbumData> {
         AlbumData album = getItem(position);
 
         //Get reference to ImageView
-        albumCoverPhoto = (ImageView)row.findViewById(R.id.albumCoverPhoto);
+        ImageView albumCoverPhoto = (ImageView)row.findViewById(R.id.albumCoverPhoto);
 
         //Get reference to TextView - albumTitle
-        albumTitle = (TextView)row.findViewById(R.id.albumTitle);
+        TextView albumTitle = (TextView)row.findViewById(R.id.albumTitle);
 
         //Get reference to TextView - albumExtraInfo
-        albumExtraInfo = (TextView)row.findViewById(R.id.albumExtraInfo);
+        TextView albumExtraInfo = (TextView)row.findViewById(R.id.albumExtraInfo);
 
         //Set album title
         albumTitle.setText(album.getTitle());
 
         //Set cover photo icon
-        String imageURL = album.getCoverPhoto();
+        String imageURL = album.getCoverPhoto().trim();
 
-        if (!imageURL.trim().equals("")) {
-            Bitmap bitmap = Globals.getRemoteImage(album.getCoverPhoto());
-            albumCoverPhoto.setImageBitmap(bitmap);
+        if (!imageURL.equals("")) {
+            imageLoader.DisplayImage(imageURL, albumCoverPhoto);
         }
 
         //Set extra info
