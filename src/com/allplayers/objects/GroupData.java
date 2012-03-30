@@ -4,6 +4,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class GroupData extends DataObject {
+    /**
+     * 
+     */
+
     private String uuid = "";
     private String title = "";
     private String description = "";
@@ -52,6 +56,7 @@ public class GroupData extends DataObject {
         return uuid;
     }
 
+    @Override
     public String getId() {
         return uuid;
     }
