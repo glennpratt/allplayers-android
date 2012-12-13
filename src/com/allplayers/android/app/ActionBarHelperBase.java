@@ -27,9 +27,9 @@ import android.content.Context;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.view.InflateException;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -71,8 +71,8 @@ public class ActionBarHelperBase extends ActionBarHelper {
         setupActionBar();
 
         SimpleMenu menu = new SimpleMenu(mActivity);
-        mActivity.onCreatePanelMenu(Window.FEATURE_OPTIONS_PANEL, menu);
-        mActivity.onPrepareOptionsMenu(menu);
+        mActivity.onCreatePanelMenu(Window.FEATURE_OPTIONS_PANEL, (android.view.Menu) menu);
+        mActivity.onPrepareOptionsMenu((android.view.Menu) menu);
         for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
             if (mActionItemIds.contains(item.getItemId())) {
@@ -128,7 +128,6 @@ public class ActionBarHelperBase extends ActionBarHelper {
      *
      * NOTE: This code will mark on-screen menu items as invisible.
      */
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Hides on-screen action items from the options menu.
         for (Integer id : mActionItemIds) {
@@ -195,7 +194,7 @@ public class ActionBarHelperBase extends ActionBarHelper {
         actionButton.setContentDescription(item.getTitle());
         actionButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                mActivity.onMenuItemSelected(Window.FEATURE_OPTIONS_PANEL, item);
+                mActivity.onMenuItemSelected(Window.FEATURE_OPTIONS_PANEL, (android.view.MenuItem) item);
             }
         });
 

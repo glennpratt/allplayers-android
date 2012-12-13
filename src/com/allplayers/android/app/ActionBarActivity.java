@@ -16,21 +16,16 @@
 
 package com.allplayers.android.app;
 
-import com.allplayers.android.GroupsActivity;
+
 import com.allplayers.android.R;
 import com.allplayers.android.account.Authenticator;
-import com.allplayers.android.account.AuthenticatorActivity;
-import com.allplayers.android.fragments.FragmentTabsPager;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
-import android.support.v4.app.FragmentActivity;
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.widget.Toast;
 
 /**
  * A base activity that defers common functionality across app activities to an {@link
@@ -41,7 +36,7 @@ import android.widget.Toast;
  * NOTE: this may used with the Android Compatibility Package by extending
  * android.support.v4.app.FragmentActivity instead of {@link Activity}.
  */
-public abstract class ActionBarActivity extends FragmentActivity {
+public abstract class ActionBarActivity extends SherlockFragmentActivity {
     final ActionBarHelper mActionBarHelper = ActionBarHelper.createInstance(this);
 
     /**
@@ -67,11 +62,11 @@ public abstract class ActionBarActivity extends FragmentActivity {
         }
     }
 
-    /**{@inheritDoc}*/
-    @Override
-    public MenuInflater getMenuInflater() {
-        return mActionBarHelper.getMenuInflater(super.getMenuInflater());
-    }
+    //    /**{@inheritDoc}*/
+    //    @Override
+    //    public MenuInflater getMenuInflater() {
+    //        return mActionBarHelper.getMenuInflater(super.getMenuInflater());
+    //    }
 
     /**{@inheritDoc}*/
     @Override
@@ -79,7 +74,7 @@ public abstract class ActionBarActivity extends FragmentActivity {
         // Check account state first.
         verifyAccount();
         super.onCreate(savedInstanceState);
-        mActionBarHelper.onCreate(savedInstanceState);
+        //mActionBarHelper.onCreate(savedInstanceState);
     }
 
     /**{@inheritDoc}*/
@@ -89,23 +84,23 @@ public abstract class ActionBarActivity extends FragmentActivity {
         mActionBarHelper.onPostCreate(savedInstanceState);
     }
 
-    /**
-     * Base action bar-aware implementation for
-     * {@link Activity#onCreateOptionsMenu(android.view.Menu)}.
-     *
-     * Note: marking menu items as invisible/visible is not currently supported.
-     */
+    /**{@inheritDoc}*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        boolean retValue = false;
+        menu.add("Save")
+        .setIcon(R.drawable.ic_compose)
+        .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.home, menu);
+        menu.add("Search")
+        .setIcon(R.drawable.ic_search)
+        .setActionView(R.layout.collapsible_edittext)
+        .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 
-        retValue |= mActionBarHelper.onCreateOptionsMenu(menu);
-        retValue |= super.onCreateOptionsMenu(menu);
+        menu.add("Settings")
+        .setIcon(R.drawable.ic_refresh)
+        .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
-        return retValue;
+        return true;
     }
 
     /**{@inheritDoc}*/
@@ -115,35 +110,54 @@ public abstract class ActionBarActivity extends FragmentActivity {
         super.onTitleChanged(title, color);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case android.R.id.home:
-            Toast.makeText(this, "Tapped home", Toast.LENGTH_SHORT).show();
-            break;
+    //public boolean onOptionsItemSelected(MenuItem item) {
+    //        switch (item.getItemId()) {
+    //        case android.R.id.home:
+    //            Toast.makeText(this, "Tapped home", Toast.LENGTH_SHORT).show();
+    //            break;
+    //
+    //        case R.id.menu_refresh:
+    //            Toast.makeText(this, "Fake refreshing...", Toast.LENGTH_SHORT).show();
+    //            getActionBarHelper().setRefreshActionItemState(true);
+    //            getWindow().getDecorView().postDelayed(
+    //                    new Runnable() {
+    //                        public void run() {
+    //                            getActionBarHelper().setRefreshActionItemState(false);
+    //                        }
+    //                    }, 1000);
+    //            break;
+    //
+    //        case R.id.menu_search:
+    //            //Toast.makeText(this, "Tapped search", Toast.LENGTH_SHORT).show();
+    //            // temp
+    //            startActivity(new Intent(this, FragmentTabsPager.class));
+    //            break;
+    //
+    //        case R.id.menu_account:
+    //            Toast.makeText(this, "Tapped account", Toast.LENGTH_SHORT).show();
+    //            startActivity(new Intent(this, AuthenticatorActivity.class));
+    //            break;
+    //        }
+    //        return super.onOptionsItemSelected(item);
+    //    }
 
-        case R.id.menu_refresh:
-            Toast.makeText(this, "Fake refreshing...", Toast.LENGTH_SHORT).show();
-            getActionBarHelper().setRefreshActionItemState(true);
-            getWindow().getDecorView().postDelayed(
-                    new Runnable() {
-                        public void run() {
-                            getActionBarHelper().setRefreshActionItemState(false);
-                        }
-                    }, 1000);
-            break;
-
-        case R.id.menu_search:
-            //Toast.makeText(this, "Tapped search", Toast.LENGTH_SHORT).show();
-            // temp
-            startActivity(new Intent(this, FragmentTabsPager.class));
-            break;
-
-        case R.id.menu_account:
-            Toast.makeText(this, "Tapped account", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, AuthenticatorActivity.class));
-            break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+    //    /**
+    //     * A fragment that displays a menu.  This fragment happens to not
+    //     * have a UI (it does not implement onCreateView), but it could also
+    //     * have one if it wanted.
+    //     */
+    //    public static class MenuFragment extends SherlockFragment {
+    //
+    //        @Override
+    //        public void onCreate(Bundle savedInstanceState) {
+    //            super.onCreate(savedInstanceState);
+    //            setHasOptionsMenu(true);
+    //        }
+    //
+    //        @Override
+    //        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    //            menu.add("Menu 1a").setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+    //            menu.add("Menu 1b").setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+    //        }
+    //    }
 }

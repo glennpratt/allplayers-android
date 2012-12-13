@@ -18,10 +18,10 @@ package com.allplayers.android;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.view.ActionProvider;
+import com.actionbarsherlock.view.ActionProvider;
 import android.view.ContextMenu;
-import android.view.MenuItem;
-import android.view.SubMenu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.SubMenu;
 import android.view.View;
 
 /**
@@ -149,7 +149,7 @@ public class SimpleMenuItem implements MenuItem {
         return false;
     }
 
-    public MenuItem setOnActionExpandListener(OnActionExpandListener onActionExpandListener) {
+    public MenuItem setOnActionExpandListener(com.actionbarsherlock.view.MenuItem.OnActionExpandListener onActionExpandListener) {
         // Noop
         return this;
     }

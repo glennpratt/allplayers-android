@@ -18,4 +18,7 @@
     <color name="actionbar_title_color">#224894</color>
     <color name="black">#ff000000</color>
     <color name="white">#ffffffff</color>
+    <color name="partial">#CCEEEEEE</color>
+    <color name="allplayers_blue">#002147</color>
+    <color name="allplayers_red">#9B243E</color>
 </resources>

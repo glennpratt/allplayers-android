@@ -5,6 +5,7 @@ import com.allplayers.android.R;
 import com.allplayers.objects.GroupData;
 
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -28,10 +29,9 @@ public class GroupInfoFragment extends Fragment {
         getActivity().setTitle(title);
 
 
-        Bitmap logo = Globals.getRemoteImage(logoURL);
-
         ImageView imView = (ImageView) getActivity().findViewById(R.id.groupLogo);
-        imView.setImageBitmap(logo);
+        imView.setTag(logoURL);
+        new DownloadImagesTask().execute(imView);
 
         TextView groupInfo = (TextView) getActivity().findViewById(R.id.groupDetails);
         groupInfo.setText("Title: " + title + "\n\nDescription: " + desc);
@@ -47,6 +47,23 @@ public class GroupInfoFragment extends Fragment {
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.groupinfofragment, container, false);
         return v;
+
+    }
+
+    public class DownloadImagesTask extends AsyncTask<ImageView, Void, Bitmap> {
+
+        ImageView imageView = null;
+
+        @Override
+        protected Bitmap doInBackground(ImageView... imageViews) {
+            this.imageView = imageViews[0];
+            return Globals.getRemoteImage((String)imageView.getTag());
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            imageView.setImageBitmap(result);
+        }
 
     }
 
