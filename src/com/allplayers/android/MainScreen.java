@@ -1,11 +1,19 @@
 package com.allplayers.android;
 
+import java.io.IOException;
+
+import com.allplayers.android.account.Authenticator;
 import com.allplayers.rest.RestApiV1;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,8 +26,13 @@ public class MainScreen extends TabActivity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        // Check account state first.
+        verifyAccount();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.inapplayout);
+    }
+
+    public void onLogin() {
 
         context = this.getBaseContext();
 
@@ -79,6 +92,82 @@ public class MainScreen extends TabActivity {
         }
         default:
             return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * Verify an account is available to be used or prompt the user to choose
+     * or create one.
+     *
+     * TODO - Implement this on all Activities, one way or another, so that
+     *  Activities may be started by arbitrary intent and still get an account.
+     *
+     * TODO - If an Activity is still in memory, this isn't called
+     *  (onCreate). So a user may delete an account and continue using
+     *  the app logged in.  Notify or check more often.
+     */
+    private void verifyAccount() {
+        AccountManager am = AccountManager.get(this);
+        Account[] accounts = am.getAccountsByType(Authenticator.ACCOUNT_TYPE);
+
+        if (accounts.length > 0) {
+            new AuthTask().execute(accounts[0]);
+        }
+        else {
+            // Start the activity to add an account.
+            am.addAccount(Authenticator.ACCOUNT_TYPE, null, null, null, this, null, null);
+        }
+    }
+
+    /**
+     * Background task to load groups...
+     */
+    private class AuthTask extends AsyncTask<Account, Void, Void> {
+        /**
+         * Before jumping into background thread, start busy animation.
+         */
+        @Override
+        protected void onPreExecute() {
+            // TODO: Add busy animation.
+        }
+
+        /**
+         * Perform the background query using {@link ExtendedWikiHelper}, which
+         * may return an error message as the result.
+         */
+        @Override
+        protected Void doInBackground(Account... accounts) {
+            AccountManager am = AccountManager.get(MainScreen.this);
+            Account account = accounts[0];
+            try {
+                String authToken = am.getAuthToken(account, Authenticator.ACCOUNT_TYPE, false, null, null).getResult().getString(AccountManager.KEY_AUTHTOKEN);
+                RestApiV1.restoreCookies(authToken);
+            } catch (OperationCanceledException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (AuthenticatorException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        /**
+         * Progress update (needs research).
+         */
+        @Override
+        protected void onProgressUpdate(Void... args) {
+        }
+
+        /**
+         * Finished, put the content in.
+         */
+        @Override
+        protected void onPostExecute(Void list) {
+            MainScreen.this.onLogin();
         }
     }
 }

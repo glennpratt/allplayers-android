@@ -11,6 +11,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jasypt.util.text.BasicTextEncryptor;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -23,6 +25,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -30,8 +36,7 @@ import javax.net.ssl.X509TrustManager;
 
 public class RestApiV1 {
     public static String user_id = "";
-    private static String session_cookie = ""; // first session cookie
-    private static String chocolatechip_cookie = ""; // second cookie
+    private static List<String> sCookies = new ArrayList<String>();
     public static String secretKey;
 
     public RestApiV1() {
@@ -63,21 +68,18 @@ public class RestApiV1 {
     }
 
     public static boolean isLoggedIn() {
-        if (user_id.equals("")) {
-            return false;
-        }
+//        if (user_id.equals("")) {
+//            return false;
+//        }
 
         // Check an authorized call
         try {
             URL url = new URL(
-                "https://www.allplayers.com/?q=api/v1/rest/users/"
-                + user_id + ".json");
+                "https://www.allplayers.com/?q=api/v1/rest/users/current.json");
             HttpURLConnection connection = (HttpURLConnection) url
                                            .openConnection();
             connection.setDoInput(true);
-            connection.addRequestProperty("Cookie", chocolatechip_cookie + ";"
-                                          + session_cookie);
-            // connection.addRequestProperty("Cookie", session_cookie);
+            attachCookies(connection);
             InputStream inStream = connection.getInputStream();
             BufferedReader input = new BufferedReader(new InputStreamReader(
                         inStream));
@@ -247,7 +249,7 @@ public class RestApiV1 {
     }
 
     private static String makeAuthenticatedGet(String urlString) {
-        if (!isLoggedIn() && !isLoggedIn()) {
+        if (!isLoggedIn()) {
             return "You are not logged in";
         }
 
@@ -257,8 +259,7 @@ public class RestApiV1 {
             HttpURLConnection connection = (HttpURLConnection) url
                                            .openConnection();
             connection.setDoInput(true);
-            connection.setRequestProperty("Cookie", chocolatechip_cookie + ";"
-                                          + session_cookie);
+            attachCookies(connection);
             InputStream inStream = connection.getInputStream();
             BufferedReader input = new BufferedReader(new InputStreamReader(
                         inStream));
@@ -268,6 +269,8 @@ public class RestApiV1 {
             while ((line = input.readLine()) != null) {
                 result += line;
             }
+
+            System.out.println(result);
 
             return result;
         } catch (Exception ex) {
@@ -291,8 +294,7 @@ public class RestApiV1 {
             connection.setRequestMethod("DELETE");
             connection.setRequestProperty("Content-Type",
                                           "application/x-www-form-urlencoded");
-            connection.setRequestProperty("Cookie", chocolatechip_cookie + ";"
-                                          + session_cookie);
+            attachCookies(connection);
 
             return "done";
         } catch (Exception ex) {
@@ -319,8 +321,7 @@ public class RestApiV1 {
             connection.setRequestMethod("PUT");
             connection.setRequestProperty("Content-Type",
                                           "application/x-www-form-urlencoded");
-            connection.setRequestProperty("Cookie", chocolatechip_cookie + ";"
-                                          + session_cookie);
+            attachCookies(connection);
 
             DataOutputStream printout = new DataOutputStream(
                 connection.getOutputStream());
@@ -395,8 +396,7 @@ public class RestApiV1 {
                     return "You are not logged in";
                 }
 
-                connection.setRequestProperty("Cookie", chocolatechip_cookie
-                                              + ";" + session_cookie);
+                attachCookies(connection);
             }
 
             DataOutputStream printout = new DataOutputStream(
@@ -434,7 +434,7 @@ public class RestApiV1 {
             // If logging in, store the cookies for future use
             if (urlString
                     .equals("https://www.allplayers.com/?q=api/v1/rest/users/login.json")) {
-                setCookies(connection);
+                storeCookies(connection);
             }
 
             return result;
@@ -444,58 +444,78 @@ public class RestApiV1 {
         }
     }
 
-    private static void setCookies(HttpURLConnection connection) {
-        // Get all cookies from the server
-        for (int i = 0;; i++) {
-            String headerName = connection.getHeaderFieldKey(i);
-            String headerValue = connection.getHeaderField(i);
-
-            if (headerName == null && headerValue == null) {
-                // No more headers
-                break;
+    private static void attachCookies(HttpURLConnection connection) {
+        System.out.println(sCookies.toString());
+        String cookies = "";
+        for (String cookie: sCookies) {
+            if (cookies.length() > 0) {
+                cookies += ";";
             }
+            cookies += cookie.split(";", 2)[0];
+        }
+        if (cookies.length() > 0) {
+            connection.addRequestProperty("Cookie", cookies);
+        }
+        Map<String, List<String>> headers = connection.getHeaderFields();
+        System.out.println(headers.toString());
+    }
 
-            if ("Set-Cookie".equalsIgnoreCase(headerName)) {
-                // parse cookie
-                String[] fields = headerValue.split(";\\s*");
-
-                String cookieValue = fields[0];
-
-                if (cookieValue.startsWith("SESS")) {
-                    session_cookie = cookieValue;
-                } else if (cookieValue.startsWith("CHOCOLATECHIP")) {
-                    chocolatechip_cookie = cookieValue;
-                }
+    private static void storeCookies(HttpURLConnection connection) {
+        String[] types = {"Set-Cookie", "set-cookie"};
+        for (String type : types) {
+            List<String> cookies = connection.getHeaderFields().get(type);
+            if (cookies != null) {
+                sCookies.addAll(cookies);
             }
+        }
+    }
+
+    public static void restoreCookies(String jsonCookies) {
+        // TODO - handle cookie changes!
+        JSONArray cookies;
+        try {
+            cookies = new JSONArray(jsonCookies);
+
+            for (int i = 1; i < cookies.length(); i++) {
+                String cookie = cookies.getString(i);
+                sCookies.add(cookie);
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException("Invalid Auth Token");
+        }
+    }
+
+    public static void restoreCookies(List<String> cookies) {
+        for (String cookie: cookies) {
+            sCookies.add(cookie);
         }
     }
 
     public static void logOut() {
         user_id = "";
-        session_cookie = "";
-        chocolatechip_cookie = "";
+        sCookies = new ArrayList<String>();
     }
 
-	public static Bitmap getRemoteImage(final String urlString) {
-		try {
-			HttpGet httpRequest = null;
+    public static Bitmap getRemoteImage(final String urlString) {
+        try {
+            HttpGet httpRequest = null;
 
-			try {
-				httpRequest = new HttpGet(new URL(urlString).toURI());
-			} catch (URISyntaxException ex) {
-				System.err.println("Globals/getRemoteImage/" + ex);
-			}
+            try {
+                httpRequest = new HttpGet(new URL(urlString).toURI());
+            } catch (URISyntaxException ex) {
+                System.err.println("Globals/getRemoteImage/" + ex);
+            }
 
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpResponse response = httpclient.execute(httpRequest);
-			HttpEntity entity = response.getEntity();
-			BufferedHttpEntity bufHttpEntity = new BufferedHttpEntity(entity);
-			InputStream instream = bufHttpEntity.getContent();
-			return BitmapFactory.decodeStream(instream);
-		} catch (IOException ex) {
-			System.err.println("Globals/getRemoteImage/" + ex);
-		}
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpResponse response = httpclient.execute(httpRequest);
+            HttpEntity entity = response.getEntity();
+            BufferedHttpEntity bufHttpEntity = new BufferedHttpEntity(entity);
+            InputStream instream = bufHttpEntity.getContent();
+            return BitmapFactory.decodeStream(instream);
+        } catch (IOException ex) {
+            System.err.println("Globals/getRemoteImage/" + ex);
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

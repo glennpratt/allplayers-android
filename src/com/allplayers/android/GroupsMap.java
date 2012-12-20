@@ -26,6 +26,7 @@ public class GroupsMap {
             }
         } catch (JSONException ex) {
             System.err.println("GroupsMap/" + ex);
+            System.err.println(jsonResult);
         }
     }
 
