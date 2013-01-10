@@ -1,15 +1,5 @@
 package com.allplayers.rest;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -22,14 +12,32 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.BufferedHttpEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 public class RestApiV1 {
-    private static String sCurrentUserUUID;
+    private static String sCurrentUserUUID = "";
     private static CookieHandler sCookieHandler = new CookieManager();
+    private static List<String> sCookies = new ArrayList<String>();
 
     public RestApiV1() {
         // Create a trust manager that does not validate certificate chains
@@ -59,7 +67,10 @@ public class RestApiV1 {
         }
 
         // Install CookieHandler
-        CookieHandler.setDefault(sCookieHandler);
+        CookieHandler handler = CookieHandler.getDefault();
+        if (handler != sCookieHandler) {
+          //CookieHandler.setDefault(sCookieHandler);
+        }
     }
 
     public static boolean isLoggedIn() {
@@ -427,11 +438,16 @@ public class RestApiV1 {
         sCurrentUserUUID = "";
     }
 
-    /**
-     * Get a Bitmap from a URL.
-     *
-     * TODO - Use same connection and cookies as REST requests.
-     */
+    public static void restoreCookies(List<String> cookies) {
+        for (String cookie: cookies) {
+            sCookies.add(cookie);
+        }
+    }
+
+    public void setCurrentUserUUID(String uuid) {
+        sCurrentUserUUID = uuid;
+    }
+
     public static Bitmap getRemoteImage(final String urlString) {
         try {
             HttpGet httpRequest = null;
@@ -439,7 +455,7 @@ public class RestApiV1 {
             try {
                 httpRequest = new HttpGet(new URL(urlString).toURI());
             } catch (URISyntaxException ex) {
-                System.err.println("RestApiV1/getRemoteImage/" + ex);
+                System.err.println("Globals/getRemoteImage/" + ex);
             }
 
             HttpClient httpclient = new DefaultHttpClient();
@@ -449,13 +465,9 @@ public class RestApiV1 {
             InputStream instream = bufHttpEntity.getContent();
             return BitmapFactory.decodeStream(instream);
         } catch (IOException ex) {
-            System.err.println("RestApiV1/getRemoteImage/" + ex);
+            System.err.println("Globals/getRemoteImage/" + ex);
         }
 
         return null;
-    }
-
-    public void setCurrentUserUUID(String uuid) {
-        sCurrentUserUUID = uuid;
     }
 }

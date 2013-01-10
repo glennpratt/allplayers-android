@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+/**
+ * Copyright (c) 2010, The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/login_bg"  >
+    
+
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1" >
+        
+        <LinearLayout
+        	android:layout_width="fill_parent"
+        	android:layout_height="fill_parent"
+        	android:orientation="vertical" >
+        	
+		   <ImageView
+		        android:id="@+id/allplayers_logo"
+		        android:layout_width="fill_parent"
+		        android:layout_height="90dp"
+		        android:layout_margin="25dp"
+		        android:src="@drawable/allplayers_logo2" />
+	
+	        <LinearLayout
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:layout_weight="1"
+	            android:orientation="vertical"
+	            android:paddingBottom="13dip"
+	            android:paddingLeft="20dip"
+	            android:paddingRight="20dip"
+	            android:paddingTop="5dip"
+	            android:background="@color/partial" >
+	
+	            <TextView
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:text="@string/hint_username"
+	                android:textAppearance="?android:attr/textAppearanceSmall"
+	                android:textColor="@color/allplayers_blue"
+	                android:textStyle="bold" />
+
+	            <EditText
+	                android:id="@+id/username_edit"
+	                android:layout_width="fill_parent"
+	                android:layout_height="wrap_content"
+	                android:inputType="textEmailAddress"
+	                android:minWidth="250dip"
+	                android:nextFocusDown="@+id/password_edit"
+	                android:scrollHorizontally="true"
+	                android:singleLine="true" >
+
+	                <requestFocus />
+
+	                <requestFocus />
+
+	            </EditText>
+
+	            <TextView
+	                android:id="@+id/username_fixed"
+	                android:textAppearance="?android:attr/textAppearanceSmall"
+	                android:singleLine="true"
+	                android:layout_marginTop="2dip"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content" />
+	            <TextView
+	                android:textAppearance="?android:attr/textAppearanceSmall"
+	                android:textStyle="bold"
+	                android:singleLine="true"
+	                android:layout_marginTop="2dip"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:text="@string/hint_password"
+	                android:textColor="@color/allplayers_blue" />
+
+	            <EditText
+	                android:id="@+id/password_edit"
+	                android:layout_width="fill_parent"
+	                android:layout_height="wrap_content"
+	                android:inputType="textPassword"
+	                android:minWidth="250dip"
+	                android:nextFocusDown="@+id/ok_button"
+	                android:scrollHorizontally="true"
+	                android:singleLine="true" />
+
+	            <TextView
+	                android:id="@+id/message"
+	                android:textAppearance="?android:attr/textAppearanceSmall"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginBottom="5dip" />
+       		</LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="2dip"
+        android:background="@color/allplayers_blue" />
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:background="@color/partial"
+        android:minHeight="54dip"
+        android:orientation="horizontal"
+        android:paddingLeft="2dip"
+        android:paddingRight="2dip"
+        android:paddingTop="4dip" >
+        
+        <Button
+            android:id="@+id/ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="100dip"
+            android:text="@string/button_login"
+            android:onClick="handleLogin"
+            android:layout_toLeftOf="@+id/sign_up_button"
+             />
+
+        <Button
+            android:id="@+id/sign_up_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="100dip"
+            android:text="@string/button_sign_up"
+            android:layout_alignParentRight="true" />
+
+    </RelativeLayout>
+</LinearLayout>

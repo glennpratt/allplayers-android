@@ -1,4 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">AllPlayers.com</string>
+    
+    <string name="hint_username">E-mail</string>
+    <string name="hint_password">Password</string>
+    <string name="button_login">Login</string>
+    <string name="button_sign_up">Sign Up</string>
+    <string name="button_cancel">Cancel</string>
+        <!-- Message shown in dialog if the username or password is invalid. -->
+    <string
+        name="login_activity_loginfail_text_both">The email or password isn\'t valid.</string>
+    <!-- Message shown in dialog if the password is invalid -->
+    <string
+        name="login_activity_loginfail_text_pwonly">You entered the wrong password or your account has changed.
+        Please re-enter your password.</string>
+    <!-- Message shown in dialog to prompt the user for their password -->
+    <string name="login_activity_loginfail_text_pwmissing">Type the password for this account.</string>
+    <!--
+        Message shown if the provided account doesn't support the current
+        activity.
+    -->
+    <string name="login_activity_newaccount_text">Sign in to your AllPlayers.com account. </string>
+    <string name="message_authenticating">Please wait while you are being logged-in…</string>
 </resources>
