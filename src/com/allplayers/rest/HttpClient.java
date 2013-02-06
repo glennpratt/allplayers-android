@@ -8,12 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;

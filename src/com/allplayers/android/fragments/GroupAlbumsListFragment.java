@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import com.allplayers.android.AlbumAdapter;
 import com.allplayers.android.AlbumsMap;
-import com.allplayers.android.Globals;
 import com.allplayers.android.R;
 import com.allplayers.objects.AlbumData;
+import com.allplayers.objects.GroupData;
 import com.allplayers.rest.RestApiV1;
 
 import android.os.AsyncTask;
@@ -16,10 +16,13 @@ import android.widget.ArrayAdapter;
 
 public class GroupAlbumsListFragment extends ListFragment {
 
+	private GroupData mGroupData;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mGroupData = (GroupData) this.getActivity().getIntent().getSerializableExtra("GROUP");
         // Load the list in a background task.
         new GroupAlbumsTask().execute();
 
@@ -58,7 +61,7 @@ public class GroupAlbumsListFragment extends ListFragment {
          */
         @Override
         protected ArrayList<AlbumData> doInBackground(String... args) {
-            String jsonResult = RestApiV1.getGroupAlbumsByGroupId(Globals.currentGroup.getUUID());
+            String jsonResult = RestApiV1.getGroupAlbumsByGroupId(mGroupData.getUUID());
             AlbumsMap albums = new AlbumsMap(jsonResult);
             ArrayList<AlbumData> list = albums.getAlbumData();
 

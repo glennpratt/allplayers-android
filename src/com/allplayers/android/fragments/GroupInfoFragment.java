@@ -20,7 +20,8 @@ public class GroupInfoFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        GroupData group = Globals.currentGroup;
+        //GroupData group = Globals.currentGroup;
+        GroupData group = (GroupData) this.getActivity().getIntent().getSerializableExtra("GROUP");
         String title = group.getTitle();
         String desc = group.getDescription();
         String logoURL = group.getLogo();

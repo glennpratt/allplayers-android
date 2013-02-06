@@ -6,12 +6,8 @@ import com.allplayers.rest.RestApiV1;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.XmlResourceParser;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -126,11 +122,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
      * @param authToken the authentication token returned by the server, or NULL if
      *            authentication failed.
      */
-    public void onAuthenticationResult(String authToken) {
-
-        boolean success = ((authToken != null) && (authToken.length() > 0));
-        Log.d(TAG, "authToken = " + authToken);
-        Log.i(TAG, "onAuthenticationResult(" + success + ")");
+    public void onAuthenticationSuccess(String authToken) {
 
         // Our task is complete, so clear it out
         mAuthTask = null;
@@ -138,23 +130,29 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         // Hide the progress dialog
         hideProgress();
 
-        if (success) {
-            if (!mConfirmCredentials) {
-                finishLogin(authToken);
-            } else {
-                finishConfirmCredentials(success);
-            }
+        if (!mConfirmCredentials) {
+            finishLogin(authToken);
         } else {
-            Log.e(TAG, "onAuthenticationResult: failed to authenticate");
-            if (mRequestNewAccount) {
-                // "Please enter a valid username/password.
-                mMessage.setText(getText(R.string.login_activity_loginfail_text_both));
-            } else {
-                // "Please enter a valid password." (Used when the
-                // account is already in the database but the password
-                // doesn't work.)
-                mMessage.setText(getText(R.string.login_activity_loginfail_text_pwonly));
-            }
+            finishConfirmCredentials(true);
+        }
+    }
+
+    public void onAuthenticationException(Exception ex) {
+        // Our task is complete, so clear it out
+        mAuthTask = null;
+
+        // Hide the progress dialog
+        hideProgress();
+        
+    	Log.e(TAG, "onAuthenticationResult: failed to authenticate");
+        if (mRequestNewAccount) {
+            // "Please enter a valid username/password.
+            mMessage.setText(getText(R.string.login_activity_loginfail_text_both));
+        } else {
+            // "Please enter a valid password." (Used when the
+            // account is already in the database but the password
+            // doesn't work.)
+            mMessage.setText(getText(R.string.login_activity_loginfail_text_pwonly));
         }
     }
 
@@ -251,24 +249,29 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     /**
      * Asynchronous task used to authenticate a user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, String> {
+    public class UserLoginTask extends AsyncTask<Void, Void, Object> {
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected Object doInBackground(Void... params) {
             try {
                 return RestApiV1.login(mUsername, mPassword);
             } catch (Exception ex) {
                 Log.e(TAG, "UserLoginTask.doInBackground: failed to authenticate");
                 Log.i(TAG, ex.toString());
-                return null;
+                return ex;
             }
         }
 
         @Override
-        protected void onPostExecute(final String authToken) {
+        protected void onPostExecute(final Object result) {
             // On a successful authentication, call back into the Activity to
-            // communicate the authToken (or null for an error).
-            onAuthenticationResult(authToken);
+            // communicate the authToken.
+        	if (result instanceof String) {
+                onAuthenticationSuccess((String) result);
+        	}
+        	else if (result instanceof Exception) {
+        		onAuthenticationException((Exception) result);
+        	}
         }
 
         @Override

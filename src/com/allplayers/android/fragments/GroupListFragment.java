@@ -7,11 +7,8 @@ import com.allplayers.android.LocalStorage;
 import com.allplayers.android.R;
 import com.allplayers.android.net.AuthClient;
 import com.allplayers.objects.GroupData;
-import com.allplayers.rest.RestApiV1;
-
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,7 +21,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 
 public class GroupListFragment extends ListFragment{
@@ -53,11 +49,13 @@ public class GroupListFragment extends ListFragment{
         super.onListItemClick(l, v, position, id);
 
         if (hasGroups) {
-            // TODO - This is bullshit.
-            Globals.currentGroup = groupList.get(position);
+            GroupData group = groupList.get(position);
 
+            Intent intent = new Intent(getActivity(), GroupActivity.class);
+            intent.putExtra("GROUP", group);
+            
             //Display the group page for the selected group
-            getActivity().startActivity(new Intent(getActivity(), GroupActivity.class));
+            getActivity().startActivity(intent);
         }
     }
 

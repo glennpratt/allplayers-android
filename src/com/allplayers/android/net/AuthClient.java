@@ -1,24 +1,15 @@
 package com.allplayers.android.net;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
-import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
 
 import com.allplayers.android.account.Authenticator;
 import com.allplayers.rest.RestApiV1;

@@ -2,9 +2,7 @@ package com.allplayers.android.account;
 
 import java.util.List;
 
-import org.apache.http.auth.AuthenticationException;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.allplayers.android.R;

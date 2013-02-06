@@ -4,6 +4,7 @@ import com.allplayers.android.EventDisplayActivity;
 import com.allplayers.android.EventsMap;
 import com.allplayers.android.Globals;
 import com.allplayers.objects.EventData;
+import com.allplayers.objects.GroupData;
 import com.allplayers.rest.RestApiV1;
 
 import android.content.Intent;
@@ -21,12 +22,14 @@ import java.util.HashMap;
 public class GroupEventsListFragment extends ListFragment{
     private ArrayList<EventData> eventsList;
     private boolean hasEvents = false;
+    private GroupData mGroupData = null;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mGroupData = (GroupData) this.getActivity().getIntent().getSerializableExtra("GROUP");
         // Load the list in a background task.
         new GroupEventsTask().execute();
 
@@ -74,7 +77,7 @@ public class GroupEventsListFragment extends ListFragment{
         @Override
         protected ArrayList<HashMap<String, String>> doInBackground(String... args) {
             ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>(2);
-            String jsonResult = RestApiV1.getGroupEventsByGroupId(Globals.currentGroup.getUUID());
+            String jsonResult = RestApiV1.getGroupEventsByGroupId(mGroupData.getUUID());
 
             EventsMap events = new EventsMap(jsonResult);
             eventsList = events.getEventData();

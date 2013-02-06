@@ -25,7 +25,7 @@ import android.os.Bundle;
  * Tab Pager Group activity.
  */
 public class GroupActivity extends ActionBarTabsActivity {
-
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

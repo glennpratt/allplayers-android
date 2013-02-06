@@ -33,19 +33,8 @@ import android.os.Bundle;
  *
  * NOTE: dynamically marking menu items as invisible/visible is not currently supported.
  *
- * NOTE: this may used with the Android Compatibility Package by extending
- * android.support.v4.app.FragmentActivity instead of {@link Activity}.
  */
 public abstract class ActionBarActivity extends SherlockFragmentActivity {
-    final ActionBarHelper mActionBarHelper = ActionBarHelper.createInstance(this);
-
-    /**
-     * Returns the {@link ActionBarHelper} for this activity.
-     */
-    protected ActionBarHelper getActionBarHelper() {
-        return mActionBarHelper;
-    }
-
     private void verifyAccount() {
         AccountManager am = AccountManager.get(this);
         Account[] accounts = am.getAccountsByType(Authenticator.ACCOUNT_TYPE);
@@ -79,13 +68,6 @@ public abstract class ActionBarActivity extends SherlockFragmentActivity {
 
     /**{@inheritDoc}*/
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mActionBarHelper.onPostCreate(savedInstanceState);
-    }
-
-    /**{@inheritDoc}*/
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add("Save")
         .setIcon(R.drawable.ic_compose)
@@ -101,13 +83,6 @@ public abstract class ActionBarActivity extends SherlockFragmentActivity {
         .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
         return true;
-    }
-
-    /**{@inheritDoc}*/
-    @Override
-    protected void onTitleChanged(CharSequence title, int color) {
-        mActionBarHelper.onTitleChanged(title, color);
-        super.onTitleChanged(title, color);
     }
 
     //public boolean onOptionsItemSelected(MenuItem item) {

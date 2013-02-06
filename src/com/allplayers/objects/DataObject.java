@@ -1,5 +1,7 @@
 package com.allplayers.objects;
 
-public abstract class DataObject {
-    public abstract String getId();
+import java.io.Serializable;
+
+public abstract class DataObject implements Serializable{
+	public abstract String getId();
 }
